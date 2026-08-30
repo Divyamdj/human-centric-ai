@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div x-data="{ editing: false, selected: '{{ result }}', original: '{{ result }}' }">
+
+    {% if result %}
+        <div class="mt-6 p-4 border-l-4 rounded shadow-sm"
+            :class="{
+                'border-green-500 bg-green-50 text-green-700': selected === 'Classification',
+                'border-blue-500 bg-blue-50 text-blue-700': selected === 'Regression',
+                'border-yellow-500 bg-yellow-50 text-yellow-700': selected !== 'Classification' && selected !== 'Regression'
+            }">
+
+            <!-- Display mode -->
+            <template x-if="!editing">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <template x-if="selected === 'Classification'">
+                            <span>✅ <strong>Problem Type Detected:</strong> Classification</span>
+                        </template>
+                        <template x-if="selected === 'Regression'">
+                            <span>📈 <strong>Problem Type Detected:</strong> Regression</span>
+                        </template>
+                        <template x-if="selected !== 'Classification' && selected !== 'Regression'">
+                            <span>❓ <strong>Problem Type Detected:</strong> Unknown</span>
+                        </template>
+                    </div>
+                    <button @click="editing = true" class="text-gray-500 hover:text-gray-700 focus:outline-none ml-2">
+                        ✏️ Edit
+                    </button>
+                </div>
+            </template>
+
+            <!-- Edit mode -->
+            <template x-if="editing">
+                <div class="flex items-center space-x-4">
+                    <label class="text-sm font-medium text-gray-700">Problem Type:</label>
+                    <select x-model="selected"
+                            class="border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring focus:border-blue-300">
+                        <option value="Classification">Classification</option>
+                        <option value="Regression">Regression</option>
+                    </select>
+                    <button @click="editing = false; original = selected"
+                            class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition">Save</button>
+                    <button @click="editing = false; selected = original"
+                            class="bg-gray-300 text-gray-800 px-3 py-1 rounded hover:bg-gray-400 transition">Cancel</button>
+                </div>
+            </template>
+        </div>
+    {% endif %}
+
+    <!-- Universal "Train Model" Button -->
+    <template x-if="selected === 'Classification' || selected === 'Regression'">
+        <div class="mt-8 text-center">
+            <form :action="selected === 'Classification' ? '{% url 'project1:classification' %}' : '{% url 'project1:regression' %}'" method="get">
+                <button type="submit"
+                        class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-md shadow-sm transition duration-300 cursor-pointer">
+                    Train Model
+                </button>
+            </form>
+        </div>
+    </template>
+
+    <!-- Charts Section -->
+    {% if image_urls %}
+        <div class="mt-10">
+            <h3 class="text-xl font-semibold text-gray-800 mb-4">Generated Charts</h3>
+            <div class="space-y-8">
+                {% for url in image_urls %}
+                    <div class="bg-gray-50 border border-gray-200 p-4 rounded-lg shadow-sm">
+                        <img src="{{ url }}" alt="Chart" class="w-full h-auto rounded-md border border-gray-300">
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+    {% if heatmap_html %}
+        <div>{{ heatmap_html|safe }}</div>
+    {% endif %}
+    {% if pairplot_html %}
+        <div>{{ pairplot_html|safe }}</div>
+    {% endif %}
+</div>
+{% endblock %}

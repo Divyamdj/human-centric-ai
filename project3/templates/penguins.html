@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Welcome to Project 3</h2>
+<p>This is a Plotly visualization of the Palmer Penguins dataset.</p>
+
+{% if penguins_plot_div %}
+  <div>{{ penguins_plot_div|safe }}</div>
+{% else %}
+  <div class="mt-4 p-3 bg-yellow-100 text-yellow-800 rounded">
+    <strong>Note:</strong> No plot available.
+  </div>
+{% endif %}
+
+{% if error_message %}
+  <div class="mt-6 bg-red-100 border border-red-300 text-red-800 px-4 py-3 rounded">
+    <strong>Error:</strong> {{ error_message }}
+  </div>
+{% endif %}
+
+{% if success_message %}
+  <div class="mt-6 bg-green-100 border border-green-300 text-green-800 px-4 py-3 rounded">
+    <strong>Success:</strong> {{ success_message }}
+  </div>
+{% endif %}
+
+<!-- Fit Decision Tree Button -->
+<form method="post" action="{% url 'project3:decision_tree' %}">
+    {% csrf_token %}
+    <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 mt-4">
+        Fit a Decision Tree on the Dataset
+    </button>
+</form>
+
+<!-- Fit Logistic Regression Button -->
+<form method="post" action="{% url 'project3:logistic_regression' %}">
+    {% csrf_token %}
+    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 mt-4">
+        Fit Logistic Regression on the Dataset
+    </button>
+</form>
+
+<!-- Counterfactuals -->
+<form method="post" action="{% url 'project3:counterfactuals' %}">
+    {% csrf_token %}
+    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 mt-4">
+        Counterfactual Explanations for Palmer Penguins
+    </button>
+</form>
+
+{% endblock %}

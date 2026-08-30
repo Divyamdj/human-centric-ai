@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-md mt-10">
+    <h1 class="text-3xl font-bold mb-2">Fine-Tuning Results</h1>
+    <p class="text-gray-600 text-sm mb-6">Performance of the fine-tuned policy over epochs.</p>
+
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm border-collapse">
+            <thead>
+                <tr class="bg-gray-100 border-b">
+                    <th class="px-3 py-2 text-left">Epoch</th>
+                    <th class="px-3 py-2 text-left">Avg. Learned Reward</th>
+                    <th class="px-3 py-2 text-left">Policy Loss</th>
+                    <th class="px-3 py-2 text-left">KL Divergence</th>
+                    <th class="px-3 py-2 text-left">Total Loss</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in history %}
+                <tr class="border-b hover:bg-gray-50">
+                    <td class="px-3 py-2">{{ row.epoch }}</td>
+                    <td class="px-3 py-2">{{ row.avg_learned_reward|floatformat:4 }}</td>
+                    <td class="px-3 py-2">{{ row.policy_loss|floatformat:4 }}</td>
+                    <td class="px-3 py-2">{{ row.kl_div|floatformat:4 }}</td>
+                    <td class="px-3 py-2 font-semibold">{{ row.loss|floatformat:4 }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="mt-6">
+        <a href="{% url 'project5:index' %}" class="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700">
+            Back to Dashboard
+        </a>
+    </div>
+    <div class="mt-8">
+    <h2 class="text-lg font-semibold mb-3">Test the Fine-Tuned Policy</h2>
+    <p class="text-gray-600 mb-4">
+        Click below to watch the mouse navigate with the fine-tuned policy. 
+        This will generate and display one full episode.
+    </p>
+    <form method="post" action="{% url 'project5:run_episode' %}">
+        {% csrf_token %}
+        <button type="submit" class="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition-colors">
+            ▶️ Run Episode with Fine-Tuned Policy
+        </button>
+    </form>
+</div>
+
+</div>
+{% endblock %}

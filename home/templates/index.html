@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+<div class="container mx-auto px-4 my-12 max-w-5xl">
+
+    <div class="text-center mb-10">
+        <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4 leading-tight">HCAI Project Hub</h1>
+        <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+            This page serves as the central hub for student projects developed as part of the 
+            <strong class="text-blue-600">Human-Centric Artificial Intelligence</strong> 
+            course, by the following group:
+        </p>
+    </div>
+
+    <div class="flex flex-wrap justify-center items-center gap-4 mb-12">
+        {% for student in students %}
+            <div class="flex items-center p-3 bg-white rounded-full shadow-md transition-transform duration-200 hover:scale-105 hover:bg-gray-50">
+                <span class="text-md font-semibold text-gray-700">{{ student.name }}</span>
+                {% if student.matriculation %}
+                    <span class="mx-3 text-gray-300"> | </span>
+                    <span class="text-sm text-gray-500">{{ student.matriculation }}</span>
+                {% endif %}
+            </div>
+        {% empty %}
+            <p class="text-gray-500 italic">No students found.</p>
+        {% endfor %}
+    </div>
+
+    <div class="bg-white p-8 rounded-xl shadow-lg border border-gray-100">
+        <h2 class="text-center text-3xl font-bold text-gray-800 mb-8">Projects</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+            {% for project in projects %}
+                <a href="{% url project.url_name %}" 
+                   class="flex flex-col items-center justify-center p-6 bg-blue-50 border border-blue-100 
+                          rounded-lg shadow-md transition-all duration-300 transform hover:scale-105 
+                          hover:shadow-xl hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                    <span class="text-lg font-semibold text-blue-700">{{ project.name }}</span>
+                </a>
+            {% empty %}
+                <p class="text-gray-500 italic col-span-full text-center">No projects to display</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+{% endblock script %}

@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<style>[x-cloak] { display: none; }</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto mt-10 bg-white shadow-md rounded-lg p-6" 
+     x-data="{ modelType: 'random_forest', testSize: 0.2 }">
+
+    <h2 class="text-2xl font-semibold text-gray-800 mb-6 text-center">Train Classification Model</h2>
+
+    <form hx-post="{% url 'project1:classification' %}" 
+          hx-target="#results-container" 
+          class="space-y-5">
+        {% csrf_token %}
+
+        <div>
+            <label for="model_type" class="block text-gray-700 font-medium mb-1">Model Type</label>
+            <select name="model_type" id="model_type" required
+                    class="w-full border border-gray-300 rounded-md px-4 py-2"
+                    x-model="modelType">
+                <option value="random_forest">Random Forest</option>
+                <option value="svm">SVM</option>
+                <option value="xg_boost">XG Boost</option>
+            </select>
+        </div>
+
+        <div x-show="modelType === 'random_forest'" x-transition class="space-y-4">
+            <div>
+                <label for="n_estimators" class=" text-gray-700 font-medium mb-1 flex items-center gap-2">
+                    N Estimators
+                    <div x-data="{ open: false }" class="relative">
+                        <button type="button" @mouseenter="open = true" @mouseleave="open = false"
+                                class="text-blue-500 hover:text-blue-700 text-sm">ℹ️</button>
+                        <div x-show="open" x-cloak x-transition
+                             class="absolute left-6 top-0 bg-gray-800 text-white text-xs rounded px-2 py-1 shadow">
+                            Typical range: 10 to 1000
+                        </div>
+                    </div>
+                </label>
+                <input type="number" step="1" name="n_estimators" id="n_estimators" placeholder="e.g., 100"
+                       class="w-full border border-gray-300 rounded-md px-4 py-2">
+            </div>
+
+            <div>
+                <label for="max_depth_rf" class=" text-gray-700 font-medium mb-1 flex items-center gap-2">
+                    Max Depth (Random Forest)
+                    <div x-data="{ open: false }" class="relative">
+                        <button type="button" @mouseenter="open = true" @mouseleave="open = false"
+                                class="text-blue-500 hover:text-blue-700 text-sm">ℹ️</button>
+                        <div x-show="open" x-cloak x-transition
+                             class="absolute left-6 top-0 bg-gray-800 text-white text-xs rounded px-2 py-1 shadow">
+                            Range: 1 to 50 (or leave blank for auto)
+                        </div>
+                    </div>
+                </label>
+                <input type="number" name="max_depth_rf" id="max_depth_rf" placeholder="e.g., 5"
+                       class="w-full border border-gray-300 rounded-md px-4 py-2">
+            </div>
+        </div>
+
+        <div x-show="modelType === 'svm'" x-transition class="space-y-4">
+            <div>
+                <label for="c_param" class=" text-gray-700 font-medium mb-1 flex items-center gap-2">
+                    C Param
+                    <div x-data="{ open: false }" class="relative">
+                        <button type="button" @mouseenter="open = true" @mouseleave="open = false"
+                                class="text-blue-500 hover:text-blue-700 text-sm">ℹ️</button>
+                        <div x-show="open" x-cloak x-transition
+                             class="absolute left-6 top-0 bg-gray-800 text-white text-xs rounded px-2 py-1 shadow">
+                            Typical range: 0.01 to 10
+                        </div>
+                    </div>
+                </label>
+                <input type="number" step="0.01" name="c_param" id="c_param" placeholder="e.g., 1.0"
+                       class="w-full border border-gray-300 rounded-md px-4 py-2">
+            </div>
+            <div>
+                <label for="kernel" class=" text-gray-700 font-medium mb-1 flex items-center gap-2">
+                    Kernel (SVM)
+                </label>
+                <select name="kernel" id="kernel"
+                        class="w-full border border-gray-300 rounded-md px-4 py-2">
+                    <option value="linear">Linear</option>
+                    <option value="rbf">RBF</option>
+                    <option value="poly">Polynomial</option>
+                </select>
+            </div>
+        </div>
+
+        <div x-show="modelType === 'xg_boost'" x-transition class="space-y-4">
+            <div>
+                <label for="learning_rate" class=" text-gray-700 font-medium mb-1 flex items-center gap-2">
+                    Learning Rate
+                    <div x-data="{ open: false }" class="relative">
+                        <button type="button" @mouseenter="open = true" @mouseleave="open = false"
+                                class="text-blue-500 hover:text-blue-700 text-sm">ℹ️</button>
+                        <div x-show="open" x-cloak x-transition
+                             class="absolute left-6 top-0 bg-gray-800 text-white text-xs rounded px-2 py-1 shadow">
+                            Range: 0.01 to 1.0
+                        </div>
+                    </div>
+                </label>
+                <input type="number" step="0.01" name="learning_rate" id="learning_rate" placeholder="e.g., 0.1"
+                       class="w-full border border-gray-300 rounded-md px-4 py-2">
+            </div>
+
+            <div>
+                <label for="max_depth_xgb" class=" text-gray-700 font-medium mb-1 flex items-center gap-2">
+                    Max Depth (XG Boost)
+                    <div x-data="{ open: false }" class="relative">
+                        <button type="button" @mouseenter="open = true" @mouseleave="open = false"
+                                class="text-blue-500 hover:text-blue-700 text-sm">ℹ️</button>
+                        <div x-show="open" x-cloak x-transition
+                             class="absolute left-6 top-0 bg-gray-800 text-white text-xs rounded px-2 py-1 shadow">
+                            Range: 1 to 50
+                        </div>
+                    </div>
+                </label>
+                <input type="number" name="max_depth_xgb" id="max_depth_xgb" placeholder="e.g., 5"
+                       class="w-full border border-gray-300 rounded-md px-4 py-2">
+            </div>
+        </div>
+
+        <div>
+            <label for="test_size" class="text-gray-700 font-medium mb-1 flex items-center gap-2">
+                Test Size: <span class="text-indigo-600 font-semibold" x-text="(testSize * 100).toFixed(0) + '%'"></span>
+                <div x-data="{ open: false }" class="relative">
+                    <button type="button" @mouseenter="open = true" @mouseleave="open = false"
+                            class="text-blue-500 hover:text-blue-700 text-sm">ℹ️</button>
+                    <div x-show="open" x-cloak x-transition
+                         class="absolute left-6 top-0 bg-gray-800 text-white text-xs rounded px-2 py-1 shadow">
+                        Proportion of data for testing. Recommended: 10% to 50%.
+                    </div>
+                </div>
+            </label>
+            <input type="range"
+                   name="test_size"
+                   id="test_size"
+                   x-model="testSize"
+                   min="0.1"
+                   max="0.5"
+                   step="0.05"
+                   class="w-full mt-2 accent-indigo-600">
+        </div>
+
+        <div>
+            <label for="graph_type" class="block text-gray-700 font-medium mb-1">Select Graph</label>
+            <select name="graph_type" id="graph_type" class="w-full border border-gray-300 rounded-md px-4 py-2">
+                <option value="scatter" {% if request.POST.graph_type == "scatter" %}selected{% endif %}>Scatter Plot: True vs Predicted</option>
+                <option value="cmatrix" {% if request.POST.graph_type == "cmatrix" %}selected{% endif %}>Confusion Matrix Heatmap</option>
+                <option value="hist" {% if request.POST.graph_type == "hist" %}selected{% endif %}>Histogram of Predicted Classes</option>
+            </select>
+        </div>
+        
+        <div>
+            <label for="metric_type" class="block text-gray-700 font-medium mb-1">Select Metric:</label>
+            <select name="metric_type" id="metric_type" class="w-full border border-gray-300 rounded-md px-4 py-2">
+                <option value="accuracy" {% if request.POST.metric_type == "accuracy" %}selected{% endif %}>Accuracy</option>
+                <option value="f1" {% if request.POST.metric_type == "f1" %}selected{% endif %}>F1 Score</option>
+            </select>
+        </div>
+
+        <div>
+            <button type="submit"
+                    class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded">
+                Train Model
+            </button>
+        </div>
+    </form>
+</div>
+
+<div id="results-container" class="w-1/2 mx-auto mt-6 space-y-4"></div>
+
+{% endblock %}

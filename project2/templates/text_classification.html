@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+    [x-cloak] { display: none; }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Main Container -->
+<div class="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+
+    <!-- Header Section -->
+    <div class="text-center mb-12">
+        <h1 class="text-3xl font-bold text-gray-900 mb-8">
+            Supervised Text Classifier
+        </h1>
+        <p class="text-lg text-gray-600">
+            Machine learning model for text classification
+        </p>
+    </div>
+
+    <!-- Main Card -->
+    <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden mb-16">
+        <div class="p-8 sm:p-10">
+            <h2 class="text-3xl font-bold text-gray-900 mb-8">
+                Model Specifications
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="p-4 bg-gray-50 rounded-lg">
+                    <h3 class="text-sm font-medium text-gray-500 mb-1">
+                        Text Representation
+                    </h3>
+                    <p class="text-lg font-semibold text-gray-900">
+                        TF-IDF <span class="text-sm font-normal text-gray-500">(max_features=5000)</span>
+                    </p>
+                </div>
+                <div class="p-4 bg-gray-50 rounded-lg">
+                    <h3 class="text-sm font-medium text-gray-500 mb-1">
+                        Classifier Algorithm
+                    </h3>
+                    <p class="text-lg font-semibold text-gray-900">
+                        Logistic Regression
+                    </p>
+                </div>
+                <div class="p-4 bg-gray-50 rounded-lg">
+                    <h3 class="text-sm font-medium text-gray-500 mb-1">
+                        Model Persistence
+                    </h3>
+                    <p class="text-lg font-semibold text-gray-900">
+                        Saved via <code class="bg-gray-100 px-2 py-1 rounded">pickle</code>
+                    </p>
+                </div>
+                <div class="p-4 bg-gray-50 rounded-lg">
+                    <h3 class="text-sm font-medium text-gray-500 mb-1">
+                        Model Type
+                    </h3>
+                    <p class="text-lg font-semibold text-gray-900">
+                        Supervised Learning
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="max-w-2xl mx-auto text-center mb-16">
+        <form method="post" class="space-y-4 md:space-y-0 md:space-x-6">
+            {% csrf_token %}
+            <button name="train_model" type="submit"
+                class="w-full md:w-auto px-8 py-3 border border-transparent text-lg font-medium rounded-xl text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200 shadow">
+                Train New Model
+            </button>
+
+            <button name="load_model" type="submit"
+                class="w-full md:w-auto px-8 py-3 border border-transparent text-lg font-medium rounded-xl text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200 shadow">
+                Load Pre-trained Model
+            </button>
+        </form>
+    </div>
+    
+
+    <!-- Training Result -->
+    {% if accuracy %}
+    <div class="max-w-2xl mx-auto bg-white rounded-xl shadow overflow-hidden mb-8 border-l-4 border-green-500">
+        <div class="p-6">
+            <div class="flex items-start">
+                <div class="mr-4 text-green-500 text-2xl">✓</div>
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900">Model trained successfully!</h3>
+                    <div class="mt-2 text-gray-700">
+                        <p>Test accuracy: <span class="font-bold text-green-600">{{ accuracy|floatformat:2 }}%</span></p>
+                        <p class="mt-2 text-sm text-gray-500">
+                            Model saved at: <code class="bg-gray-100 px-2 py-1 rounded">media/trained_model.pkl</code>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Loaded Model Result -->
+    {% if load_accuracy %}
+    <div class="max-w-2xl mx-auto bg-white rounded-xl shadow overflow-hidden mb-8 border-l-4 border-blue-500">
+        <div class="p-6">
+            <div class="flex items-start">
+                <div class="mr-4 text-blue-500 text-2xl">📂</div>
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900">Pre-trained model loaded!</h3>
+                    <div class="mt-2 text-gray-700">
+                        <p>Test accuracy: <span class="font-bold text-blue-600">{{ load_accuracy|floatformat:2 }}%</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+
+    <h1 class="text-2xl font-bold mb-4">Pool-based Active Learning</h1>
+
+<form>
+    {% csrf_token %}
+    <div class="mb-4">
+        <label class="block font-semibold mb-1">Select Utility Function:</label>
+        <select class="border p-2 rounded w-full" name="strategy">
+            <option value="entropy">Entropy Sampling</option>
+            <option value="margin">Margin Sampling</option>
+            <option value="least_confident">Least Confident</option>
+        </select>
+    </div>
+
+    <div class="mb-4">
+        <label class="block font-semibold mb-1">Select Labeling Mode:</label>
+        <select class="border p-2 rounded w-full" name="mode">
+            <option value="simulated">Simulated User</option>
+            <option value="manual">Manual Labeling</option>
+        </select>
+    </div>
+
+    <button 
+        type="submit"
+        class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" 
+        hx-post="{% url 'project2:query_instance' %}" 
+        hx-include="form"
+        hx-swap="innerHTML"
+        hx-target="#al-status"
+    >
+        Query Next Sample
+    </button>
+</form>
+
+<div id="al-status" class="mt-6">
+    {% include "al_status.html" %}
+</div>
+
+</div>
+
+{% endblock %}

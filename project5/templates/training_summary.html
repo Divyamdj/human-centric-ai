@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<h1 class="text-3xl font-bold mb-2">Training Results</h1>
+<p class="text-gray-600 text-sm mb-6">Performance of the policy over epochs</p>
+
+<div class="bg-white shadow rounded-lg p-4 overflow-x-auto">
+  <table class="w-full text-sm border-collapse">
+    <thead>
+      <tr class="bg-gray-100 border-b">
+        <th class="px-3 py-2 text-left">Epoch</th>
+        <th class="px-3 py-2 text-left">Avg Return</th>
+        <th class="px-3 py-2 text-left">Loss</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in history %}
+      <tr class="border-b hover:bg-gray-50">
+        <td class="px-3 py-2">{{ row.epoch }}</td>
+        <td class="px-3 py-2">{{ row.avg_return|floatformat:2 }}</td>
+        <td class="px-3 py-2">{{ row.loss|floatformat:2 }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="mt-6">
+  <a href="{% url 'project5:index' %}"
+      class="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700">
+      Back to Dashboard
+  </a>
+</div>
+{% endblock %}

@@ -1,0 +1,18 @@
+stages:
+  - test
+
+image: python:3.10
+
+before_script:
+  - python --version
+  - pip install --upgrade pip
+  - pip install pytest pytest-django
+  - pip install -r requirements.txt || true
+
+pytest:
+  stage: test
+  script:
+    - pytest
+  only:
+    - branches
+    - merge_requests

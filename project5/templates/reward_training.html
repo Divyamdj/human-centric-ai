@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="p-4 max-w-3xl mx-auto">
+    <h1 class="text-2xl font-bold mb-4">Reward Model Training</h1>
+    
+    {% if not data_count %}
+        <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4" role="alert">
+            <p class="font-bold">No Feedback Data</p>
+            <p>{{ message }} Please collect some feedback first.</p>
+        </div>
+    {% else %}
+        <p class="mb-4 text-gray-700">{{ message }}</p>
+
+        {% if not weights %}
+        <form method="post" action="{% url 'project5:reward_train' %}">
+            {% csrf_token %}
+            <button type="submit" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors duration-200 ease-in-out">
+                🚀 Train Reward Model
+            </button>
+        </form>
+        {% endif %}
+
+        {% if weights %}
+        <div class="bg-white p-6 rounded-lg shadow-md mt-6">
+            <h2 class="text-xl font-semibold mb-3">Learned Weights (from {{ data_count }} preferences)</h2>
+            <ul class="list-disc list-inside space-y-1 text-gray-700">
+                {% for key, value in weights.items %}
+                <li><strong>{{ key }}</strong> (Feature {{ forloop.counter }}) = {{ value|floatformat:4 }}</li>
+                {% endfor %}
+            </ul>
+            <h2 class="text-xl font-semibold mt-6 mb-3">Bias</h2>
+            <p class="text-gray-700">{{ bias|floatformat:4 }}</p>
+        </div>
+        {% endif %}
+    {% endif %}
+
+    <div class="mt-8 flex space-x-4">
+        <a href="{% url 'project5:compare' %}"
+           class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200">
+           Collect More Feedback
+        </a>
+        <a href="{% url 'project5:index' %}"
+           class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors duration-200">
+           Back to Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}

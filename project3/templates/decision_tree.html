@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="max-w-3xl mx-auto mt-10 bg-white shadow-md rounded-lg p-6">
+    <h2 class="text-2xl font-bold mb-4">Decision Tree Result</h2>
+    {% if tree_plot %}
+        <img src="{{ tree_plot }}" alt="Decision Tree (plot_tree)" class="w-full mb-4" />
+    {% endif %}
+    <div class="mb-2">
+        <strong>Test Accuracy:</strong> {{ accuracy|floatformat:3 }}
+    </div>
+    <div class="mb-2">
+        <strong>Number of Leaves:</strong> {{ n_leaves }}
+    </div>
+    <details class="mt-4">
+        <summary class="cursor-pointer font-semibold">Show Text Representation</summary>
+        <pre class="bg-gray-100 p-2 rounded mt-2">{{ tree_text }}</pre>
+    </details>
+    <a href="{% url 'project3:sparse_tree' %}" class="mt-6 inline-block text-blue-500 hover:underline">Sparse tree</a>
+</div>
+
+{% endblock %}

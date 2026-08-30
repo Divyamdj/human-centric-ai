@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/output.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="mx-auto px-4 mt-10">
+<form hx-post="{% url 'project1:upload_csv' %}" hx-encoding="multipart/form-data" hx-target="#upload-result">
+{% csrf_token %}
+    <div class="w-full p-6 bg-gray-800 rounded shadow" x-data="{ file: null, fileName: 'No file chosen' }">
+    <label class="block mb-2 text-sm font-medium text-white">Upload file</label>
+
+    <!-- Hidden File Input -->
+    <input 
+      type="file"
+      name="file"
+      :files="[file]"
+      accept=".csv"
+      class="hidden"
+      x-ref="fileInput"
+      @change="file = $event.target.files[0]; fileName = file ? file.name : 'No file chosen'"
+    >
+
+    <!-- Custom File Picker UI -->
+    <div class="flex items-center">
+      <button 
+        type="button" 
+        @click="$refs.fileInput.click()"
+        class="bg-gray-600 hover:bg-gray-500 text-white px-4 py-2 rounded-l-lg whitespace-nowrap cursor-pointer"
+      >
+        Choose File
+      </button>
+      <span class="bg-gray-700 px-4 py-2 rounded-r-lg text-gray-400 w-full overflow-hidden text-ellipsis whitespace-nowrap">
+        <span x-text="fileName"></span>
+      </span>
+    </div>
+
+    <!-- Upload Button -->
+    <button
+      class="mt-4 w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded"
+      :disabled="!file"
+      :class="{ 'opacity-50 cursor-not-allowed': !file, 'cursor-pointer': file }"
+    >
+      Upload
+    </button>
+    </div>
+
+    </form></div>
+
+    <div id="upload-result" class="mt-4 text-center text-sm text-gray-700"></div>
+
+{% endblock %}

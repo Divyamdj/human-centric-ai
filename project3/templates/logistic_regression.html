@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto mt-10 bg-white shadow-md rounded-lg p-6">
+    <h2 class="text-2xl font-bold mb-4">Logistic Regression Result</h2>
+    <div class="mb-2">
+        <strong>Test Accuracy:</strong> {{ accuracy|floatformat:3 }}
+    </div>
+    <div class="mb-2">
+        <form method="post" action="{% url 'project3:logistic_regression' %}">
+            {% csrf_token %}
+            <label class="block mb-2 font-medium">Select features to use:</label>
+            {% for feature in available_features %}
+                <label>
+                    <input type="checkbox" name="selected_features" value="{{ feature }}"
+                        {% if feature in selected_features %}checked{% endif %}>
+                    {{ feature }}
+                </label><br>
+            {% endfor %}
+            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 mt-2">
+                Fit Logistic Regression on the Dataset
+            </button>
+        </form>
+        {% if feedback %}
+        <div class="mt-4 p-2 bg-blue-100 text-blue-800 rounded">{{ feedback }}</div>
+        {% endif %}
+    </div>
+    <details class="mt-4">
+    <summary class="cursor-pointer font-semibold">Show Used Features</summary>
+    <ul class="bg-gray-100 p-2 rounded mt-2">
+        {% for name in used_feature_names %}
+            <li>{{ name }}</li>
+        {% endfor %}
+    </ul>
+</details>
+</div>
+{% endblock %}

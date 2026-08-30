@@ -1,0 +1,17 @@
+[
+  {
+    "traj1": {
+      "total_reward": 1,
+      "normal_cheese": 0,
+      "organic_cheese": 0,
+      "steps": 1
+    },
+    "traj2": {
+      "total_reward": 0,
+      "normal_cheese": 0,
+      "organic_cheese": 0,
+      "steps": 1
+    },
+    "choice": "traj1"
+  }
+]

@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<style>[x-cloak] { display: none; }</style>
+{% endblock %}
+
+{% block content %}
+
+{% if selected_metric_value is not None %}
+    <div class="p-4 bg-gray-100 rounded-lg shadow">
+        <strong class="text-gray-800">
+        {% if selected_metric == "mse" %}Mean Squared Error (MSE){% elif selected_metric == "r2" %}R² Score{% endif %}:
+        </strong>
+        <span class="text-indigo-600 font-mono">{{ selected_metric_value }}</span>
+    </div>
+    {% endif %}
+
+    {% if error_message %}
+    <div class="bg-red-100 border border-red-300 text-red-800 px-4 py-3 rounded-lg shadow">
+        <strong>Error:</strong> {{ error_message }}
+    </div>
+    {% endif %}
+    
+    {% if regression_plot_div %}
+      <div class="bg-white p-4 rounded-lg shadow">
+        {{ regression_plot_div|safe }}
+      </div>
+    {% endif %}
+
+{% endblock %}

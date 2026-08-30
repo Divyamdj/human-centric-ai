@@ -1,0 +1,20 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+<div>
+    <p class="font-semibold">Queried Sample:</p>
+    <blockquote class="border-l-4 border-blue-400 pl-4 my-3 italic text-gray-800">{{ sample_text }}</blockquote>
+
+    <form hx-post="{% url 'project2:label_sample' %}" hx-include="form" hx-swap="innerHTML" hx-target="#al-status">
+        {% csrf_token %}
+        <input type="hidden" name="idx" value="{{ idx }}">
+        <label class="block mb-2">Your Label:</label>
+        <div class="flex gap-4">
+            <button name="label" value="1" class="bg-green-500 px-4 py-2 rounded text-white hover:bg-green-600">Positive</button>
+            <button name="label" value="0" class="bg-red-500 px-4 py-2 rounded text-white hover:bg-red-600">Negative</button>
+        </div>
+    </form>
+</div>
+
+{% endblock %}
